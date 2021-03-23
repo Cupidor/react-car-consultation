@@ -17,4 +17,6 @@ config.carUrl = config.host + '/car/';
 config.shoppintListUrl = config.host + '/shoppint_list/';
 // 浏览记录
 config.viewRecordUrl = config.host + '/view_record/';
+// 购物订单
+config.shoppingOrderUrl = config.host + '/shopping_order/';
 export default config;

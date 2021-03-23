@@ -45,8 +45,15 @@
   {
     path: '/history',
     name: 'history',
-    icon: 'ClockCircle',
+    icon: 'FieldTime',
     component: './Buyer/History',
+    access: 'isBuyer'
+  },
+  {
+    path: '/order',
+    name: 'order',
+    icon: 'AccountBook',
+    component: './Buyer/Order',
     access: 'isBuyer'
   },
   {
@@ -54,6 +61,13 @@
     name: 'shop',
     icon: 'Shop',
     component: './Seller/Shop',
+    access: 'isSeller'
+  },
+  {
+    path: '/sellerOrder',
+    name: 'sellerOrder',
+    icon: 'AccountBook',
+    component: './Seller/SellerOrder',
     access: 'isSeller'
   },
   {

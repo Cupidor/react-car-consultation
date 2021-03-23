@@ -18,3 +18,12 @@ export async function getViewRecordQueryByCondition(params: any) {
     params,
   });
 }
+
+// 删除浏览记录
+export async function deleteViewRecord(params: any) {
+  return request(`${api.viewRecordUrl}delete`, {
+    method: 'DELETE',
+    requestType: 'form',
+    data: params,
+  });
+}

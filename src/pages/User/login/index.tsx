@@ -59,7 +59,6 @@ const Login: React.FC = () => {
     setSubmitting(true);
     try {
       // 登录
-      console.log(values);
       const msg = await LoginSystem({ ...values });
       if (msg.code === '0000') {
         message.success('登录成功！');

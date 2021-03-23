@@ -35,7 +35,6 @@ class NewCar extends PureComponent {
         if (this.props.title === '编辑车辆') {
           if (this.props.detail !== null) {
             let json = this.props.detail
-            console.log(json)
             this.setState(
               {
                 carId: json.id,
@@ -79,7 +78,6 @@ class NewCar extends PureComponent {
       res = await createCar({ ...values });
     } else {
       values.carId = carId;
-      console.log(values)
       res = await updateCar({ ...values });
     }
     if (res.code === '0000') {

@@ -2,7 +2,8 @@ import React, { PureComponent } from 'react';
 import { Space, Typography, message, Table, Popconfirm } from 'antd';
 import global from '@/global.less';
 import Footer from '@/components/Footer';
-import { getViewRecordQueryByCondition, deleteViewRecord } from '@/services/view_record';
+import { queryUser } from '@/services/user';
+import { getShoppingOrderQueryByCondition, deleteShoppingOrder } from '@/services/shopping_order';
 import { numberDateFormat } from '@/utils/utils';
 
 const { Text } = Typography;
@@ -20,21 +21,44 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
-    this.getAllHistory();
+    this.getAdminDetail();
   }
 
-  // 获取所有浏览记录
-  getAllHistory = async () => {
-    const { pageSize, currentPage } = this.state;
+  // 获取登录的用户信息
+  getAdminDetail = async () => {
+    let res = await queryUser(localStorage.getItem('userId'));
+    if (res.code === '0000') {
+      this.setState(
+        {
+          car_stores: res.result.car_stores,
+        },
+        () => {
+          if (this.state.car_stores.length !== 0) {
+            this.setState({
+              store_id: res.result.car_stores[0].id
+            }, () => {
+              this.getAllOrder()
+            })
+          }
+        },
+      );
+    } else {
+      message.error(res.message);
+    }
+  };
+
+  // 获取所有订单
+  getAllOrder = async () => {
+    const { pageSize, currentPage, store_id } = this.state;
     this.setState({
       tableLoading: true,
     });
-    let res = await getViewRecordQueryByCondition({
+    let res = await getShoppingOrderQueryByCondition({
       limit: pageSize,
       offset: pageSize * (currentPage - 1),
       sortColumnName: 'create_time',
       sortOrderType: 'desc',
-      SUserId: localStorage.getItem('userId')
+      carStoreMasterId: localStorage.getItem('userId')
     });
     if (res.code === '0000') {
       let records = [];
@@ -42,10 +66,15 @@ class Index extends PureComponent {
         let obj = Object.create(null);
         obj.key = item.id;
         obj.createTime = item.create_time;
-        obj.brand_name = item.car.brand_name;
-        obj.model = item.car.model;
-        obj.car_type = item.car.car_type;
-        obj.color = item.car.color;
+        obj.order_no = item.order_no;
+        obj.user_name = item.suser.user_name
+        let array = []
+        for (let item of item.shopping_lists) {
+          if (item.car.car_store_id === store_id) {
+            array.push(item)
+          }
+        }
+        obj.shopping_lists = array
         records.push(obj);
       }
       this.setState({
@@ -65,17 +94,17 @@ class Index extends PureComponent {
         currentPage: page,
       },
       () => {
-        this.getAllHistory();
+        this.getAllOrder();
       },
     );
   };
 
-  // 删除记录
+  // 删除订单
   deleteRecord = async (id) => {
-    let res = await deleteViewRecord({ viewRecordId: id });
+    let res = await deleteShoppingOrder({ shoppingOrderId: id });
     if (res.code === '0000') {
-      message.success('删除记录成功');
-      this.getAllHistory();
+      message.success('删除订单成功');
+      this.getAllOrder();
     } else {
       message.error(res.message);
     }
@@ -85,39 +114,41 @@ class Index extends PureComponent {
     const { records } = this.state;
     const columns = [
       {
-        title: '浏览时间',
+        title: '下单时间',
         dataIndex: 'createTime',
         key: 'createTime',
         render: (text) => <span>{numberDateFormat(text, 'yyyy-MM-dd HH:mm')}</span>,
       },
       {
-        title: '品牌名称',
-        dataIndex: 'brand_name',
-        key: 'brand_name',
+        title: '订单编号',
+        dataIndex: 'order_no',
+        key: 'order_no',
       },
       {
-        title: '车辆型号',
-        dataIndex: 'model',
-        key: 'model',
+        title: '下单的产品',
+        dataIndex: 'shopping_lists',
+        key: 'shopping_lists',
+        render: (text, record) => (
+          <Space direction='vertical'>
+            {text.map((item, index) => {
+              return <span key={index}>{item.car.brand_name}/{item.car.model}/{item.car.car_type}/{item.car.color}*{item.car_num}</span>
+            })}
+          </Space>
+        ),
       },
       {
-        title: '车辆类型',
-        dataIndex: 'car_type',
-        key: 'car_type',
+        title: '下单用户',
+        dataIndex: 'user_name',
+        key: 'user_name',
       },
-      {
-        title: '车辆颜色',
-        dataIndex: 'color',
-        key: 'color',
-      },
-      {
+      /*{
         title: '操作',
         key: 'action',
         render: (text, record) => (
           <Space size="middle">
             {record.is_manager !== true && (
               <Popconfirm
-                title="确定删除该记录?"
+                title="确定删除该订单?"
                 onConfirm={this.deleteRecord.bind(this, record.key)}
               >
                 <a style={{ color: 'red' }}>删除</a>
@@ -125,14 +156,14 @@ class Index extends PureComponent {
             )}
           </Space>
         ),
-      },
+      },*/
     ];
     return (
       <div className={global.MyMain}>
         <div className={global.MyContent}>
           <div className={global.MyHeader}>
             <div className={global.MyTitle}>
-              <Text style={{ fontSize: 16 }}>浏览记录</Text>
+              <Text style={{ fontSize: 16 }}>我的订单</Text>
             </div>
           </div>
           <div className={global.MyBody}>

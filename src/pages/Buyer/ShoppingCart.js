@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Space, Typography, message, Modal, Table, Tag, Popconfirm } from 'antd';
+import { Space, Typography, message, Modal, Table, InputNumber, Button } from 'antd';
 import global from '@/global.less';
 import Footer from '@/components/Footer';
-import { getShoppintListQueryByCondition } from '@/services/shoppint_list';
+import { getShoppintListQueryByCondition, updateShoppintList, deleteShoppintList } from '@/services/shoppint_list';
+import { createShoppingOrder } from '@/services/shopping_order';
+
 import { numberDateFormat } from '@/utils/utils';
 
 const { Text, Title } = Typography;
@@ -17,15 +19,16 @@ class Index extends PureComponent {
       pageSize: 10,
       total: 0,
       tableLoading: false,
+      selectedRowKeys: []
     };
   }
 
   componentDidMount() {
-    this.getAllHistory();
+    this.getAllGoods();
   }
 
-  // 获取所有浏览记录
-  getAllHistory = async () => {
+  // 获取购物车所有产品
+  getAllGoods = async () => {
     const { pageSize, currentPage } = this.state;
     this.setState({
       tableLoading: true,
@@ -38,18 +41,17 @@ class Index extends PureComponent {
       SUserId: localStorage.getItem('userId')
     });
     if (res.code === '0000') {
-      console.log(res.result)
       let records = [];
       for (let item of res.result) {
         let obj = Object.create(null);
         obj.key = item.id;
         obj.createTime = item.create_time;
-        obj.real_name = item.real_name;
-        obj.user_name = item.user_name;
-        obj.latest_update_time = item.latest_update_time;
-        obj.password = item.password;
-        obj.telephone = item.telephone;
-        obj.user_type = item.user_type;
+        obj.id = item.id;
+        obj.car_num = item.car_num;
+        obj.brand_name = item.car.brand_name;
+        obj.model = item.car.model;
+        obj.car_type = item.car.car_type;
+        obj.color = item.car.color;
         records.push(obj);
       }
       this.setState({
@@ -69,24 +71,58 @@ class Index extends PureComponent {
         currentPage: page,
       },
       () => {
-        this.getAllHistory();
+        this.getAllGoods();
       },
     );
   };
 
-  // 删除用户
-  deleteCurrentUser = async (id) => {
-    let res = await deleteUser({ sUserId: id });
+  // 数量改变
+  onNumChange = (record, num) => {
+    if (num !== 0) {
+      this.updateShoppingCart(record.id, num)
+    } else {
+      this.deleteShoppingCart(record.id)
+    }
+  }
+
+  // 从购物车去除
+  deleteShoppingCart = async (id, num) => {
+    let res = await deleteShoppintList({ shoppingListId: id });
     if (res.code === '0000') {
-      message.success('删除记录成功');
-      this.getAllHistory();
+      message.success('从购物车移除车辆成功')
+      this.getAllGoods();
     } else {
       message.error(res.message);
     }
-  };
+  }
+
+  // 更新购物车
+  updateShoppingCart = async (id, num) => {
+    let res = await updateShoppintList({ shoppingListId: id, carNum: num });
+    if (res.code === '0000') {
+      this.getAllGoods();
+    } else {
+      message.error(res.message);
+    }
+  }
+
+  // 生成订单
+  addOrder = async () => {
+    const { selectedRowKeys } = this.state;
+    if (selectedRowKeys.length === 0) {
+      message.warning('请勾选要生成订单的产品')
+    }
+    let res = await createShoppingOrder({ shoppingListIdArr: JSON.stringify(selectedRowKeys), sUserId: localStorage.getItem('userId') });
+    if (res.code === '0000') {
+      message.success('生成订单成功')
+      this.getAllGoods();
+    } else {
+      message.error(res.message);
+    }
+  }
 
   render() {
-    const { records } = this.state;
+    const { records, selectedRowKeys } = this.state;
     const columns = [
       {
         title: '创建时间',
@@ -95,49 +131,59 @@ class Index extends PureComponent {
         render: (text) => <span>{numberDateFormat(text, 'yyyy-MM-dd HH:mm')}</span>,
       },
       {
-        title: '用户名',
-        dataIndex: 'user_name',
-        key: 'user_name',
+        title: '品牌名称',
+        dataIndex: 'brand_name',
+        key: 'brand_name',
       },
       {
-        title: '真实姓名',
-        dataIndex: 'real_name',
-        key: 'real_name',
+        title: '车辆型号',
+        dataIndex: 'model',
+        key: 'model',
       },
       {
-        title: '操作',
-        key: 'action',
+        title: '车辆类型',
+        dataIndex: 'car_type',
+        key: 'car_type',
+      },
+      {
+        title: '车辆颜色',
+        dataIndex: 'color',
+        key: 'color',
+      },
+      {
+        title: '数量',
+        key: 'car_num',
         render: (text, record) => (
-          <Space size="middle">
-            {/*<a style={{ color: 'green' }} onClick={this.editCurrentUser.bind(this, record)}>
-              编辑
-        </a>*/}
-            {record.is_manager !== true && (
-              <Popconfirm
-                title="确定删除该用户?"
-                onConfirm={this.deleteCurrentUser.bind(this, record.key)}
-              >
-                <a style={{ color: 'red' }}>删除</a>
-              </Popconfirm>
-            )}
-          </Space>
+          <InputNumber min={0} value={record.car_num} onChange={this.onNumChange.bind(this, record)} />
         ),
       },
     ];
+    const rowSelection = {
+      onChange: (selectedRowKeys, selectedRows) => {
+        this.setState({
+          selectedRowKeys,
+        })
+      }
+    };
     return (
       <div className={global.MyMain}>
         <div className={global.MyContent}>
-          <div className={global.MyHeader}>
+          <div className={global.MyHeader} style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div className={global.MyTitle}>
               <Text style={{ fontSize: 16 }}>我的购物车</Text>
             </div>
             <Space>
-              {/*<Search placeholder="请输入用户名或姓名" onSearch={this.onSearch} enterButton />*/}
+              <Button type='primary' onClick={this.addOrder}>生成订单</Button>
             </Space>
           </div>
           <div className={global.MyBody}>
             <div className={global.MyBodyRight}>
               <Table
+                rowSelection={{
+                  type: 'checkbox',
+                  selectedRowKeys: selectedRowKeys,
+                  ...rowSelection,
+                }}
                 loading={this.state.tableLoading}
                 columns={columns}
                 dataSource={records}

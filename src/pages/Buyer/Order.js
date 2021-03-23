@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Space, Typography, message, Table, Popconfirm } from 'antd';
 import global from '@/global.less';
 import Footer from '@/components/Footer';
-import { getViewRecordQueryByCondition, deleteViewRecord } from '@/services/view_record';
+import { getShoppingOrderQueryByCondition, deleteShoppingOrder } from '@/services/shopping_order';
 import { numberDateFormat } from '@/utils/utils';
 
 const { Text } = Typography;
@@ -20,16 +20,16 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
-    this.getAllHistory();
+    this.getAllOrder();
   }
 
-  // 获取所有浏览记录
-  getAllHistory = async () => {
+  // 获取所有订单
+  getAllOrder = async () => {
     const { pageSize, currentPage } = this.state;
     this.setState({
       tableLoading: true,
     });
-    let res = await getViewRecordQueryByCondition({
+    let res = await getShoppingOrderQueryByCondition({
       limit: pageSize,
       offset: pageSize * (currentPage - 1),
       sortColumnName: 'create_time',
@@ -42,10 +42,8 @@ class Index extends PureComponent {
         let obj = Object.create(null);
         obj.key = item.id;
         obj.createTime = item.create_time;
-        obj.brand_name = item.car.brand_name;
-        obj.model = item.car.model;
-        obj.car_type = item.car.car_type;
-        obj.color = item.car.color;
+        obj.order_no = item.order_no;
+        obj.shopping_lists = item.shopping_lists
         records.push(obj);
       }
       this.setState({
@@ -65,17 +63,17 @@ class Index extends PureComponent {
         currentPage: page,
       },
       () => {
-        this.getAllHistory();
+        this.getAllOrder();
       },
     );
   };
 
-  // 删除记录
+  // 删除订单
   deleteRecord = async (id) => {
-    let res = await deleteViewRecord({ viewRecordId: id });
+    let res = await deleteShoppingOrder({ shoppingOrderId: id });
     if (res.code === '0000') {
-      message.success('删除记录成功');
-      this.getAllHistory();
+      message.success('取消订单成功');
+      this.getAllOrder();
     } else {
       message.error(res.message);
     }
@@ -85,30 +83,27 @@ class Index extends PureComponent {
     const { records } = this.state;
     const columns = [
       {
-        title: '浏览时间',
+        title: '下单时间',
         dataIndex: 'createTime',
         key: 'createTime',
         render: (text) => <span>{numberDateFormat(text, 'yyyy-MM-dd HH:mm')}</span>,
       },
       {
-        title: '品牌名称',
-        dataIndex: 'brand_name',
-        key: 'brand_name',
+        title: '订单编号',
+        dataIndex: 'order_no',
+        key: 'order_no',
       },
       {
-        title: '车辆型号',
-        dataIndex: 'model',
-        key: 'model',
-      },
-      {
-        title: '车辆类型',
-        dataIndex: 'car_type',
-        key: 'car_type',
-      },
-      {
-        title: '车辆颜色',
-        dataIndex: 'color',
-        key: 'color',
+        title: '下单的产品',
+        dataIndex: 'shopping_lists',
+        key: 'shopping_lists',
+        render: (text, record) => (
+          <Space direction='vertical'>
+            {text.map((item, index) => {
+              return <span key={index}>{item.car.brand_name}/{item.car.model}/{item.car.car_type}/{item.car.color}*{item.car_num}</span>
+            })}
+          </Space>
+        ),
       },
       {
         title: '操作',
@@ -117,10 +112,10 @@ class Index extends PureComponent {
           <Space size="middle">
             {record.is_manager !== true && (
               <Popconfirm
-                title="确定删除该记录?"
+                title="确定取消该订单?"
                 onConfirm={this.deleteRecord.bind(this, record.key)}
               >
-                <a style={{ color: 'red' }}>删除</a>
+                <a style={{ color: 'red' }}>取消订单</a>
               </Popconfirm>
             )}
           </Space>
@@ -132,7 +127,7 @@ class Index extends PureComponent {
         <div className={global.MyContent}>
           <div className={global.MyHeader}>
             <div className={global.MyTitle}>
-              <Text style={{ fontSize: 16 }}>浏览记录</Text>
+              <Text style={{ fontSize: 16 }}>我的订单</Text>
             </div>
           </div>
           <div className={global.MyBody}>
