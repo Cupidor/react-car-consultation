@@ -34,17 +34,17 @@ class Index extends PureComponent {
       offset: pageSize * (currentPage - 1),
       sortColumnName: 'create_time',
       sortOrderType: 'desc',
-      SUserId: localStorage.getItem('userId')
+      userId: localStorage.getItem('userId')
     });
     if (res.code === '0000') {
       let records = [];
       for (let item of res.result) {
         let obj = Object.create(null);
         obj.key = item.id;
-        obj.createTime = item.create_time;
-        obj.brand_name = item.car.brand_name;
-        obj.model = item.car.model;
-        obj.car_type = item.car.car_type;
+        obj.createTime = item.createTime;
+        obj.brand_name = item.car.brandName;
+        obj.model = item.car.carModel;
+        obj.carPrice = item.car.carPrice;
         obj.color = item.car.color;
         records.push(obj);
       }
@@ -101,9 +101,9 @@ class Index extends PureComponent {
         key: 'model',
       },
       {
-        title: '车辆类型',
-        dataIndex: 'car_type',
-        key: 'car_type',
+        title: '车辆价格',
+        dataIndex: 'carPrice',
+        key: 'carPrice',
       },
       {
         title: '车辆颜色',

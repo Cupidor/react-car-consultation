@@ -3,7 +3,7 @@ import { Space, Typography, message, Table, Popconfirm } from 'antd';
 import global from '@/global.less';
 import Footer from '@/components/Footer';
 import { queryUser } from '@/services/user';
-import { getShoppingOrderQueryByCondition, deleteShoppingOrder } from '@/services/shopping_order';
+import { getShoppingOrderQueryByCondition, deleteShoppingOrder, updateShoppingOrder } from '@/services/shopping_order';
 import { numberDateFormat } from '@/utils/utils';
 
 const { Text } = Typography;
@@ -21,35 +21,12 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
-    this.getAdminDetail();
+    this.getAllOrder();
   }
-
-  // 获取登录的用户信息
-  getAdminDetail = async () => {
-    let res = await queryUser(localStorage.getItem('userId'));
-    if (res.code === '0000') {
-      this.setState(
-        {
-          car_stores: res.result.car_stores,
-        },
-        () => {
-          if (this.state.car_stores.length !== 0) {
-            this.setState({
-              store_id: res.result.car_stores[0].id
-            }, () => {
-              this.getAllOrder()
-            })
-          }
-        },
-      );
-    } else {
-      message.error(res.message);
-    }
-  };
 
   // 获取所有订单
   getAllOrder = async () => {
-    const { pageSize, currentPage, store_id } = this.state;
+    const { pageSize, currentPage } = this.state;
     this.setState({
       tableLoading: true,
     });
@@ -58,19 +35,22 @@ class Index extends PureComponent {
       offset: pageSize * (currentPage - 1),
       sortColumnName: 'create_time',
       sortOrderType: 'desc',
-      carStoreMasterId: localStorage.getItem('userId')
+      carStoreManagerId: localStorage.getItem('userId')
     });
     if (res.code === '0000') {
       let records = [];
       for (let item of res.result) {
         let obj = Object.create(null);
         obj.key = item.id;
-        obj.createTime = item.create_time;
-        obj.order_no = item.order_no;
-        obj.user_name = item.suser.user_name
+        obj.createTime = item.createTime;
+        obj.order_no = item.orderNo;
+        obj.orderState = item.orderState
+        obj.user_name = item.creator.uname
         let array = []
-        for (let item of item.shopping_lists) {
-          if (item.car.car_store_id === store_id) {
+        for (let item of item.shoppingLists) {
+          console.log(item.carStore.managerId)
+          console.log(localStorage.getItem('userId'))
+          if (item.carStore.managerId.toString() === localStorage.getItem('userId')) {
             array.push(item)
           }
         }
@@ -98,6 +78,18 @@ class Index extends PureComponent {
       },
     );
   };
+
+  // 确认订单
+  updateRecord = async (id) => {
+    let res = await updateShoppingOrder({ shoppingOrderId: id, orderState: '已确认' });
+    if (res.code === '0000') {
+      message.success('确认订单成功');
+      this.getAllOrder();
+    } else {
+      message.error(res.message);
+    }
+  };
+
 
   // 删除订单
   deleteRecord = async (id) => {
@@ -131,7 +123,7 @@ class Index extends PureComponent {
         render: (text, record) => (
           <Space direction='vertical'>
             {text.map((item, index) => {
-              return <span key={index}>{item.car.brand_name}/{item.car.model}/{item.car.car_type}/{item.car.color}*{item.car_num}</span>
+              return <span key={index}>{item.car.brandName}/{item.car.carModel}/{item.car.color}*{item.num}</span>
             })}
           </Space>
         ),
@@ -141,22 +133,28 @@ class Index extends PureComponent {
         dataIndex: 'user_name',
         key: 'user_name',
       },
-      /*{
+      {
+        title: '订单转态',
+        dataIndex: 'orderState',
+        key: 'orderState',
+      },
+      {
         title: '操作',
         key: 'action',
         render: (text, record) => (
           <Space size="middle">
-            {record.is_manager !== true && (
+            <a style={{ color: 'green' }} onClick={this.updateRecord.bind(this, record.key)}>确认订单</a>
+            {record.orderState === '未确认' && (
               <Popconfirm
-                title="确定删除该订单?"
+                title="确定取消该订单?"
                 onConfirm={this.deleteRecord.bind(this, record.key)}
               >
-                <a style={{ color: 'red' }}>删除</a>
+                <a style={{ color: 'red' }}>删除订单</a>
               </Popconfirm>
             )}
           </Space>
         ),
-      },*/
+      },
     ];
     return (
       <div className={global.MyMain}>

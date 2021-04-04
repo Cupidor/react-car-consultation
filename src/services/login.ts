@@ -3,7 +3,7 @@ import api from '@/utils/config';
 
 // 注册
 export async function LoginRegister(params: any) {
-  return request(`${api.loginUrl}register`, {
+  return request(`${api.loginUrl}register_system`, {
     method: 'POST',
     requestType: 'form',
     data: params,
@@ -12,7 +12,7 @@ export async function LoginRegister(params: any) {
 
 // 系统登录
 export async function LoginSystem(params: any) {
-  return request(`${api.loginUrl}login`, {
+  return request(`${api.loginUrl}login_system`, {
     method: 'POST',
     requestType: 'form',
     data: params,
@@ -21,7 +21,7 @@ export async function LoginSystem(params: any) {
 
 // 系统登出
 export async function logoutSystem() {
-  return request(`${api.loginUrl}logout`,{
+  return request(`${api.loginUrl}logout_system`,{
     method: 'POST',
   });
 }

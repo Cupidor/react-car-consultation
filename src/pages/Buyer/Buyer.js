@@ -5,7 +5,6 @@ import Footer from '@/components/Footer';
 import {
   ArrowRightOutlined
 } from '@ant-design/icons';
-import NewCar from '@/pages/Seller/components/NewCar'
 import { getCarsQueryByCondition } from '@/services/car';
 import { history } from 'umi'
 
@@ -35,16 +34,14 @@ class Index extends PureComponent {
       for (let item of res.result) {
         let obj = Object.create(null)
         obj.id = item.id
-        obj.create_time = item.create_time
-        obj.brand_name = item.brand_name
-        obj.model = item.model
-        obj.car_type = item.car_type
+        obj.create_time = item.createTime
+        obj.brand_name = item.brandName
+        obj.model = item.carModel
+        obj.carPrice = item.carPrice
         obj.color = item.color
-        obj.car_store = item.car_store
-        obj.car_store_master = item.car_store_master
+        obj.car_store = item.carStore
         if (obj.brand_name.indexOf(searchValue) !== -1
           || obj.model.indexOf(searchValue) !== -1
-          || obj.car_type.indexOf(searchValue) !== -1
           || obj.color.indexOf(searchValue) !== -1) {
           cars.push(obj)
         }
@@ -136,7 +133,7 @@ class Index extends PureComponent {
                         description={`车辆型号：${item.model}`}
                       />
                       <Meta
-                        description={`店铺名称：${item.car_store.store_name}`}
+                        description={`店铺名称：${item.car_store.storeName}`}
                       />
                     </Card>
                   </List.Item>
@@ -148,14 +145,6 @@ class Index extends PureComponent {
         <div className={global.MyFooter}>
           <Footer />
         </div>
-        <NewCar
-          visible={this.state.isOpend}
-          title={this.state.type}
-          detail={this.state.carInfo}
-          carStoreId={this.state.store_id}
-          closeModal={this.setNewCarModalStatus}
-          callBack={this.getAllCar}>
-        </NewCar>
       </div>
     );
   }

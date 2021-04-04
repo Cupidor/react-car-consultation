@@ -47,13 +47,12 @@ class Index extends PureComponent {
       for (let item of res.result) {
         let obj = Object.create(null);
         obj.key = item.id;
-        obj.createTime = item.create_time;
-        obj.real_name = item.real_name;
-        obj.user_name = item.user_name;
-        obj.latest_update_time = item.latest_update_time;
-        obj.password = item.password;
-        obj.telephone = item.telephone;
-        obj.user_type = item.user_type;
+        obj.createTime = item.createTime;
+        obj.user_name = item.uname;
+        obj.latest_update_time = item.latestUpdateTime;
+        obj.password = item.pwd;
+        obj.user_type = item.type;
+        obj.car_stores = item.manageCarStores
         users.push(obj);
       }
       this.setState({
@@ -105,14 +104,15 @@ class Index extends PureComponent {
         render: (text) => <span>{numberDateFormat(text, 'yyyy-MM-dd HH:mm')}</span>,
       },
       {
+        title: '最近更新时间',
+        dataIndex: 'latest_update_time',
+        key: 'latest_update_time',
+        render: (text) => <span>{numberDateFormat(text, 'yyyy-MM-dd HH:mm')}</span>,
+      },
+      {
         title: '用户名',
         dataIndex: 'user_name',
         key: 'user_name',
-      },
-      {
-        title: '真实姓名',
-        dataIndex: 'real_name',
-        key: 'real_name',
       },
       {
         title: '操作',

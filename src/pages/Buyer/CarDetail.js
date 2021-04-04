@@ -45,7 +45,7 @@ class Index extends PureComponent {
       carId: null,
       brand_name: '',
       model: '',
-      car_type: '',
+      carPrice: '',
       color: '',
       store_name: '',
       carNum: 1,
@@ -71,7 +71,7 @@ class Index extends PureComponent {
     const { carId } = this.state
     await createViewRecord({
       carId: carId,
-      sUserId: localStorage.getItem('userId')
+      userId: localStorage.getItem('userId')
     });
   }
 
@@ -80,8 +80,8 @@ class Index extends PureComponent {
     const { carId, carNum } = this.state
     let res = await createShoppintList({
       carId: carId,
-      carNum: carNum,
-      sUserId: localStorage.getItem('userId')
+      num: carNum,
+      creatorId: localStorage.getItem('userId')
     });
     if (res.code === '0000') {
       message.success('加入购物车成功')
@@ -99,11 +99,11 @@ class Index extends PureComponent {
     if (res.code === '0000') {
       let json = res.result
       this.setState({
-        brand_name: json.brand_name,
-        model: json.model,
-        car_type: json.car_type,
+        brand_name: json.brandName,
+        model: json.carModel,
+        carPrice: json.carPrice,
         color: json.color,
-        store_name: json.car_store.store_name,
+        store_name: json.carStore.storeName,
       })
     } else {
       message.error(res.message);
@@ -121,13 +121,13 @@ class Index extends PureComponent {
       let comments = []
       for (let item of json) {
         let obj = Object.create(null)
-        obj.author = item.suser ? item.suser.user_name : ''
+        obj.author = item.creator ? item.creator.uname : ''
         obj.avatar = <Avatar
           size='large'
         >{obj.author.substr(0, 1).toUpperCase()}</Avatar>
         obj.content = item.comment
-        obj.create_time = item.create_time
-        obj.datetime = numberDateFormat(item.create_time)
+        obj.create_time = item.createTime
+        obj.datetime = numberDateFormat(item.createTime)
         comments.push(obj)
       }
       comments.sort((a, b) => b.create_time - a.create_time)
@@ -174,6 +174,7 @@ class Index extends PureComponent {
     let res = await createCarComment({
       carId: carId,
       comment: commentValue,
+      creatorId: localStorage.getItem('userId')
     });
     if (res.code === '0000') {
       message.success('评论成功')
@@ -190,7 +191,7 @@ class Index extends PureComponent {
 
 
   render() {
-    const { color, brand_name, model, car_type, store_name, carNum, submitting, commentValue, comments } = this.state
+    const { color, brand_name, model, carPrice, store_name, carNum, submitting, commentValue, comments } = this.state
     return (
       <div className={global.MyMain}>
         <div className={global.MyContent}>
@@ -234,7 +235,7 @@ class Index extends PureComponent {
                   <Space direction='vertical'>
                     <Title>{brand_name}</Title>
                     <Title level={3}>车辆型号：{model}</Title>
-                    <Title level={3}>车辆类型：{car_type}</Title>
+                    <Title level={3}>车辆价格：{carPrice}</Title>
                     <Title level={3}>车辆颜色：{color}</Title>
                     <Title level={4}>店铺名称：{store_name}</Title>
                     <Space style={{ marginTop: 60 }}>

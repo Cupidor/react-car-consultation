@@ -8,13 +8,13 @@ if (version === 'prod') {
 // 系统登录接口
 config.loginUrl = config.host + '/login/';
 // 用户资源
-config.userUrl = config.host + '/s_user/';
+config.userUrl = config.host + '/suser/';
 // 车辆店铺
 config.carStoreUrl = config.host + '/car_store/';
 // 车辆管理
 config.carUrl = config.host + '/car/';
 // 购物车
-config.shoppintListUrl = config.host + '/shoppint_list/';
+config.shoppintListUrl = config.host + '/shopping_list/';
 // 浏览记录
 config.viewRecordUrl = config.host + '/view_record/';
 // 购物订单

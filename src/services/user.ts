@@ -6,17 +6,17 @@ export async function queryUserByCondition(
   limit: number,
   offset: number,
   sortColumnName: string,
-  sortOrderType: string, 
-  userType:string
+  sortOrderType: string,
+  type: string
 ) {
   return request(
-    `${api.userUrl}query_by_condition?limit=${limit}&offset=${offset}&sortColumnName=${sortColumnName}&sortOrderType=${sortOrderType}&userType=${userType}`,
+    `${api.userUrl}query_by_condition?limit=${limit}&offset=${offset}&sortColumnName=${sortColumnName}&sortOrderType=${sortOrderType}&type=${type}`,
   );
 }
 
 // 删除用户
 export async function deleteUser(params: any) {
-  return request(`${api.userUrl}delete`, {
+  return request(`${api.userUrl}delete_user`, {
     method: 'DELETE',
     requestType: 'form',
     data: params,
@@ -25,6 +25,6 @@ export async function deleteUser(params: any) {
 
 
 // 获取取用户信息
-export async function queryUser(userId: number) {
-  return request(`${api.userUrl}query?sUserId=${userId}`);
+export async function queryUser(sUserId: number) {
+  return request(`${api.userUrl}query_user?sUserId=${sUserId}`);
 }

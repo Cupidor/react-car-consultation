@@ -38,19 +38,19 @@ class Index extends PureComponent {
       offset: pageSize * (currentPage - 1),
       sortColumnName: 'create_time',
       sortOrderType: 'desc',
-      SUserId: localStorage.getItem('userId')
+      creatorId: localStorage.getItem('userId')
     });
     if (res.code === '0000') {
       let records = [];
       for (let item of res.result) {
         let obj = Object.create(null);
         obj.key = item.id;
-        obj.createTime = item.create_time;
+        obj.createTime = item.createTime;
         obj.id = item.id;
-        obj.car_num = item.car_num;
-        obj.brand_name = item.car.brand_name;
-        obj.model = item.car.model;
-        obj.car_type = item.car.car_type;
+        obj.car_num = item.num;
+        obj.brand_name = item.car.brandName;
+        obj.model = item.car.carModel;
+        obj.carPrice = item.car.carPrice;
         obj.color = item.car.color;
         records.push(obj);
       }
@@ -98,7 +98,7 @@ class Index extends PureComponent {
 
   // 更新购物车
   updateShoppingCart = async (id, num) => {
-    let res = await updateShoppintList({ shoppingListId: id, carNum: num });
+    let res = await updateShoppintList({ shoppingListId: id, num: num });
     if (res.code === '0000') {
       this.getAllGoods();
     } else {
@@ -112,7 +112,7 @@ class Index extends PureComponent {
     if (selectedRowKeys.length === 0) {
       message.warning('请勾选要生成订单的产品')
     }
-    let res = await createShoppingOrder({ shoppingListIdArr: JSON.stringify(selectedRowKeys), sUserId: localStorage.getItem('userId') });
+    let res = await createShoppingOrder({ shoppingListIds: selectedRowKeys.join(','), creatorId: localStorage.getItem('userId'), orderState: '未确认', comment: '' });
     if (res.code === '0000') {
       message.success('生成订单成功')
       this.getAllGoods();
@@ -141,9 +141,9 @@ class Index extends PureComponent {
         key: 'model',
       },
       {
-        title: '车辆类型',
-        dataIndex: 'car_type',
-        key: 'car_type',
+        title: '车辆价格',
+        dataIndex: 'carPrice',
+        key: 'carPrice',
       },
       {
         title: '车辆颜色',
@@ -156,6 +156,11 @@ class Index extends PureComponent {
         render: (text, record) => (
           <InputNumber min={0} value={record.car_num} onChange={this.onNumChange.bind(this, record)} />
         ),
+      },
+      {
+        title: '总价',
+        key: 'total',
+        render: (text, record) => <span>{(parseInt(record.carPrice) * parseInt(record.car_num)).toFixed(0)} 元</span>,
       },
     ];
     const rowSelection = {

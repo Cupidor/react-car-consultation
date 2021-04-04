@@ -40,15 +40,15 @@ class Index extends PureComponent {
     if (res.code === '0000') {
       this.setState(
         {
-          car_stores: res.result.car_stores,
+          car_stores: res.result.manageCarStores,
         },
         () => {
           if (this.state.car_stores.length === 0) {
             this.createStore()
           } else {
             this.setState({
-              store_name: res.result.car_stores[0].store_name,
-              store_id: res.result.car_stores[0].id
+              store_name: res.result.manageCarStores[0].storeName,
+              store_id: res.result.manageCarStores[0].id
             }, () => {
               this.getAllCar()
             })
@@ -71,11 +71,11 @@ class Index extends PureComponent {
       for (let item of res.result) {
         let obj = Object.create(null)
         obj.id = item.id
-        obj.create_time = item.create_time
-        obj.brand_name = item.brand_name
-        obj.model = item.model
-        obj.car_type = item.car_type
+        obj.create_time = item.createTime
+        obj.brand_name = item.brandName
+        obj.model = item.carModel
         obj.color = item.color
+        obj.carPrice = item.carPrice
         cars.push(obj)
       }
       cars.sort((a, b) => b.create_time - a.create_time)
@@ -91,8 +91,7 @@ class Index extends PureComponent {
   createStore = async () => {
     let res = await createCarStore({
       storeName: `${localStorage.getItem('userName')}的店铺`,
-      masterUserId: localStorage.getItem('userId'),
-      location: ''
+      managerId: localStorage.getItem('userId'),
     });
     if (res.code === '0000') {
       this.getAdminDetail()
@@ -158,6 +157,7 @@ class Index extends PureComponent {
           carId: id,
         });
         if (res.code === '0000') {
+          message.success('删除成功')
           this.getAllCar()
         } else {
           message.error(res.message);
@@ -237,8 +237,9 @@ class Index extends PureComponent {
                     >
                       <Meta
                         title={item.brand_name}
-                        description={`车辆型号：${item.model}，车辆类型：${item.car_type}`}
+                        description={`车辆型号：${item.model}`}
                       />
+                      <Meta description={`车辆价格：${item.carPrice}`} />
                       <Meta description={`车辆颜色：${item.color}`} />
                     </Card>
                   </List.Item>

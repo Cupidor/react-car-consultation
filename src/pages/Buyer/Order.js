@@ -34,16 +34,23 @@ class Index extends PureComponent {
       offset: pageSize * (currentPage - 1),
       sortColumnName: 'create_time',
       sortOrderType: 'desc',
-      SUserId: localStorage.getItem('userId')
+      creatorId: localStorage.getItem('userId')
     });
     if (res.code === '0000') {
       let records = [];
       for (let item of res.result) {
         let obj = Object.create(null);
         obj.key = item.id;
-        obj.createTime = item.create_time;
-        obj.order_no = item.order_no;
-        obj.shopping_lists = item.shopping_lists
+        obj.createTime = item.createTime;
+        obj.order_no = item.orderNo;
+        obj.orderState = item.orderState
+        obj.comment = item.comment
+        obj.shopping_lists = item.shoppingLists
+        let total = 0
+        for (let ele of item.shoppingLists) {
+          total += ele.carPrice * ele.num
+        }
+        obj.total = total
         records.push(obj);
       }
       this.setState({
@@ -100,10 +107,16 @@ class Index extends PureComponent {
         render: (text, record) => (
           <Space direction='vertical'>
             {text.map((item, index) => {
-              return <span key={index}>{item.car.brand_name}/{item.car.model}/{item.car.car_type}/{item.car.color}*{item.car_num}</span>
+              return <span key={index}>{item.car.brandName}/{item.car.carModel}/{item.car.color}*{item.num}</span>
             })}
           </Space>
         ),
+      },
+      {
+        title: '订单总价',
+        dataIndex: 'total',
+        key: 'total',
+        render: (text) => <span>{text} 元</span>
       },
       {
         title: '操作',

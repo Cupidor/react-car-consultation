@@ -3,7 +3,7 @@ import api from '@/utils/config';
 
 // 添加浏览记录
 export async function createViewRecord(params: any) {
-  return request(`${api.viewRecordUrl}create`, {
+  return request(`${api.viewRecordUrl}create_view_record`, {
     method: 'POST',
     requestType: 'form',
     data: params,
@@ -21,7 +21,7 @@ export async function getViewRecordQueryByCondition(params: any) {
 
 // 删除浏览记录
 export async function deleteViewRecord(params: any) {
-  return request(`${api.viewRecordUrl}delete`, {
+  return request(`${api.viewRecordUrl}delete_view_record`, {
     method: 'DELETE',
     requestType: 'form',
     data: params,

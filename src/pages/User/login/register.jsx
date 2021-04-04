@@ -44,7 +44,7 @@ const Register = () => {
           <div className={styles.main}>
             <Form {...layout} name="basic" ref={formUserRef}
               onFinish={handleSubmit}>
-              <Form.Item name="userType" label="您的角色" rules={[{ required: true }]}>
+              <Form.Item name="type" label="您的角色" rules={[{ required: true }]}>
                 <Select>
                   <Select.Option value="用户">用户</Select.Option>
                   <Select.Option value="商家">商家</Select.Option>
@@ -53,7 +53,7 @@ const Register = () => {
               </Form.Item>
               <Form.Item
                 label="用户名"
-                name="userName"
+                name="uName"
                 rules={[{ required: true, message: '请输入用户名!' }]}
                 getValueFromEvent={(event) => {
                   return event.target.value.replace(/\s+/g, '');
@@ -63,7 +63,7 @@ const Register = () => {
               </Form.Item>
               <Form.Item
                 label="密码"
-                name="password"
+                name="pwd"
                 rules={[{ required: true, message: '请输入密码!' }]}
                 getValueFromEvent={(event) => {
                   return event.target.value.replace(/\s+/g, '');
@@ -79,7 +79,7 @@ const Register = () => {
                   { required: true, message: '请再次输入密码!' },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
-                      if (!value || getFieldValue('password') === value) {
+                      if (!value || getFieldValue('pwd') === value) {
                         return Promise.resolve();
                       }
                       return Promise.reject('您输入的两个密码不匹配!');
@@ -93,14 +93,14 @@ const Register = () => {
               >
                 <Input.Password />
               </Form.Item>
-              <Form.Item
+              {/*<Form.Item
                 label="真实姓名"
                 name="uName"
                 rules={[{ required: true, message: '请输入真实姓名!' }]}
               >
                 <Input />
               </Form.Item>
-              {/*<Form.Item
+              <Form.Item
                 label="邮箱"
                 name="email"
                 rules={[

@@ -46,7 +46,7 @@ const Login: React.FC = () => {
           ...initialState,
           currentUser: userInfo.result,
         });
-        goto(userInfo.result.user_type);
+        goto(userInfo.result.type);
       }
     } else {
       if (userInfo.message) {
@@ -62,9 +62,9 @@ const Login: React.FC = () => {
       const msg = await LoginSystem({ ...values });
       if (msg.code === '0000') {
         message.success('登录成功！');
-        localStorage.setItem('userName', msg.result.user_name);
+        localStorage.setItem('userName', msg.result.uname);
         localStorage.setItem('userId', msg.result.id);
-        localStorage.setItem('userType', msg.result.user_type);
+        localStorage.setItem('userType', msg.result.type);
         await fetchUserInfo();
       } else {
         message.error(msg.message);
@@ -119,7 +119,7 @@ const Login: React.FC = () => {
               {type === 'account' && (
                 <>
                   <ProFormText
-                    name="userName"
+                    name="uName"
                     fieldProps={{
                       size: 'large',
                       prefix: <UserOutlined className={styles.prefixIcon} />,
@@ -141,7 +141,7 @@ const Login: React.FC = () => {
                     ]}
                   />
                   <ProFormText.Password
-                    name="password"
+                    name="pwd"
                     fieldProps={{
                       size: 'large',
                       prefix: <LockTwoTone className={styles.prefixIcon} />,

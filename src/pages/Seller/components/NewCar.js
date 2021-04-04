@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Form, Input, message, Modal, Select } from 'antd';
+import { Form, Input, message, Modal, Select, InputNumber } from 'antd';
 import { createCar, updateCar } from '@/services/car';
 const layout = {
   labelCol: { span: 6 },
@@ -29,12 +29,13 @@ class NewCar extends PureComponent {
         formUserRef.current.setFieldsValue({
           brandName: '',
           carModel: '',
-          carType: '',
+          carPrice: '',
           color: '',
         });
         if (this.props.title === '编辑车辆') {
           if (this.props.detail !== null) {
             let json = this.props.detail
+            console.log(json)
             this.setState(
               {
                 carId: json.id,
@@ -43,7 +44,7 @@ class NewCar extends PureComponent {
                 formUserRef.current.setFieldsValue({
                   brandName: json.brand_name,
                   carModel: json.model,
-                  carType: json.car_type,
+                  carPrice: json.carPrice,
                   color: json.color,
                 });
               },
@@ -75,6 +76,7 @@ class NewCar extends PureComponent {
     let res = null;
     if (title === '添加车辆') {
       values.carStoreId = carStoreId;
+      values.imagePath = ''
       res = await createCar({ ...values });
     } else {
       values.carId = carId;
@@ -120,6 +122,13 @@ class NewCar extends PureComponent {
             <Input />
           </Form.Item>
           <Form.Item
+            label="车辆价格"
+            name="carPrice"
+            rules={[{ required: true, message: '请输入车辆价格!' }]}
+          >
+            <InputNumber />
+          </Form.Item>
+          {/*<Form.Item
             name="carType"
             label="车辆类型"
             rules={[{ required: true, message: '请选择车辆类型!' }]}
@@ -135,7 +144,7 @@ class NewCar extends PureComponent {
                 新能源车
               </Select.Option>
             </Select>
-          </Form.Item>
+          </Form.Item>*/}
           <Form.Item
             name="color"
             label="车辆颜色"

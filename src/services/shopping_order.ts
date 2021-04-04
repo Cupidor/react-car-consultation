@@ -3,7 +3,7 @@ import api from '@/utils/config';
 
 // 添加购物订单
 export async function createShoppingOrder(params: any) {
-  return request(`${api.shoppingOrderUrl}create`, {
+  return request(`${api.shoppingOrderUrl}create_shopping_order`, {
     method: 'POST',
     requestType: 'form',
     data: params,
@@ -21,7 +21,7 @@ export async function getShoppingOrderQueryByCondition(params: any) {
 
 // 产品添加购物车
 export async function updateShoppingOrder(params: any) {
-  return request(`${api.shoppingOrderUrl}update`, {
+  return request(`${api.shoppingOrderUrl}update_shopping_order`, {
     method: 'PUT',
     requestType: 'form',
     data: params,
@@ -30,7 +30,7 @@ export async function updateShoppingOrder(params: any) {
 
 // 从购物车移除车辆
 export async function deleteShoppingOrder(params: any) {
-  return request(`${api.shoppingOrderUrl}delete`, {
+  return request(`${api.shoppingOrderUrl}delete_shopping_order`, {
     method: 'DELETE',
     requestType: 'form',
     data: params,

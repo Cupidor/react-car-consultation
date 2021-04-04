@@ -3,7 +3,7 @@ import api from '@/utils/config';
 
 // 添加车辆
 export async function createCar(params: any) {
-  return request(`${api.carUrl}create`, {
+  return request(`${api.carUrl}create_car`, {
     method: 'POST',
     requestType: 'form',
     data: params,
@@ -12,7 +12,7 @@ export async function createCar(params: any) {
 
 // 更新车辆
 export async function updateCar(params: any) {
-  return request(`${api.carUrl}update`, {
+  return request(`${api.carUrl}update_car`, {
     method: 'PUT',
     requestType: 'form',
     data: params,
@@ -21,7 +21,7 @@ export async function updateCar(params: any) {
 
 // 删除车辆
 export async function deleteCar(params: any) {
-  return request(`${api.carUrl}delete`, {
+  return request(`${api.carUrl}delete_car`, {
     method: 'DELETE',
     requestType: 'form',
     data: params,
@@ -39,7 +39,7 @@ export async function getCarsQueryByCondition(params: any) {
 
 // 查询车辆详情
 export async function getCarDetail(params: any) {
-  return request(`${api.carUrl}query`, {
+  return request(`${api.carUrl}query_car`, {
     method: 'GET',
     requestType: 'form',
     params,
