@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
-import { Space, Typography, message, Table, Popconfirm } from 'antd';
+import { Space, Typography, message, Table, Popconfirm, Rate } from 'antd';
 import global from '@/global.less';
 import Footer from '@/components/Footer';
-import { getShoppingOrderQueryByCondition, deleteShoppingOrder } from '@/services/shopping_order';
+import { getShoppingOrderQueryByCondition, deleteShoppingOrder, updateShoppingOrder } from '@/services/shopping_order';
 import { numberDateFormat } from '@/utils/utils';
 
 const { Text } = Typography;
@@ -46,6 +46,7 @@ class Index extends PureComponent {
         obj.orderState = item.orderState
         obj.comment = item.comment
         obj.shopping_lists = item.shoppingLists
+        obj.orderState = item.orderState
         let total = 0
         for (let ele of item.shoppingLists) {
           total += ele.carPrice * ele.num
@@ -86,6 +87,18 @@ class Index extends PureComponent {
     }
   };
 
+  // 评价
+  handleChangeRate = async (id, e) => {
+    let res = await updateShoppingOrder({ shoppingOrderId: id, comment: e });
+    if (res.code === '0000') {
+      message.success('订单评价成功');
+      this.getAllOrder();
+    } else {
+      message.error(res.message);
+    }
+  }
+
+
   render() {
     const { records } = this.state;
     const columns = [
@@ -119,18 +132,21 @@ class Index extends PureComponent {
         render: (text) => <span>{text} 元</span>
       },
       {
+        title: '订单状态',
+        dataIndex: 'orderState',
+        key: 'orderState',
+      },
+      {
         title: '操作',
         key: 'action',
         render: (text, record) => (
           <Space size="middle">
-            {record.is_manager !== true && (
-              <Popconfirm
-                title="确定取消该订单?"
-                onConfirm={this.deleteRecord.bind(this, record.key)}
-              >
-                <a style={{ color: 'red' }}>取消订单</a>
-              </Popconfirm>
-            )}
+            {record.orderState === '已确认' ? <Rate onChange={this.handleChangeRate.bind(this, record.key)} value={record.comment === '' ? 0 : record.comment} /> : <Popconfirm
+              title="确定取消该订单?"
+              onConfirm={this.deleteRecord.bind(this, record.key)}
+            >
+              <a style={{ color: 'red' }}>取消订单</a>
+            </Popconfirm>}
           </Space>
         ),
       },

@@ -8,6 +8,7 @@ export default {
   'menu.cardetail':'车辆详情',
   'menu.shoppingcart':'购物车',
   'menu.history':'浏览记录',
+  'menu.focus':'我的关注',
   'menu.order':'我的订单',
   'menu.shop':'店铺首页',
   'menu.sellerOrder':'店铺订单',

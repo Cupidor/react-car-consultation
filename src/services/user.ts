@@ -23,8 +23,25 @@ export async function deleteUser(params: any) {
   });
 }
 
-
 // 获取取用户信息
 export async function queryUser(sUserId: number) {
   return request(`${api.userUrl}query_user?sUserId=${sUserId}`);
+}
+
+// 关注车辆
+export async function focusCar(params: any) {
+  return request(`${api.userUrl}focus_car`, {
+    method: 'POST',
+    requestType: 'form',
+    data: params,
+  });
+}
+
+// 关注车辆
+export async function focusCarStore(params: any) {
+  return request(`${api.userUrl}focus_car_store`, {
+    method: 'POST',
+    requestType: 'form',
+    data: params,
+  });
 }

@@ -48,8 +48,6 @@ class Index extends PureComponent {
         obj.user_name = item.creator.uname
         let array = []
         for (let item of item.shoppingLists) {
-          console.log(item.carStore.managerId)
-          console.log(localStorage.getItem('userId'))
           if (item.carStore.managerId.toString() === localStorage.getItem('userId')) {
             array.push(item)
           }
@@ -142,16 +140,18 @@ class Index extends PureComponent {
         title: '操作',
         key: 'action',
         render: (text, record) => (
+
           <Space size="middle">
-            <a style={{ color: 'green' }} onClick={this.updateRecord.bind(this, record.key)}>确认订单</a>
             {record.orderState === '未确认' && (
-              <Popconfirm
-                title="确定取消该订单?"
-                onConfirm={this.deleteRecord.bind(this, record.key)}
-              >
-                <a style={{ color: 'red' }}>删除订单</a>
-              </Popconfirm>
-            )}
+              <>
+                <a style={{ color: 'green' }} onClick={this.updateRecord.bind(this, record.key)}>确认订单</a>
+                <Popconfirm
+                  title="确定取消该订单?"
+                  onConfirm={this.deleteRecord.bind(this, record.key)}
+                >
+                  <a style={{ color: 'red' }}>删除订单</a>
+                </Popconfirm>
+              </>)}
           </Space>
         ),
       },

@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Space, Typography, message, Modal, Table, InputNumber, Button } from 'antd';
 import global from '@/global.less';
 import Footer from '@/components/Footer';
+import { history } from 'umi'
 import { getShoppintListQueryByCondition, updateShoppintList, deleteShoppintList } from '@/services/shoppint_list';
 import { createShoppingOrder } from '@/services/shopping_order';
 
@@ -47,6 +48,7 @@ class Index extends PureComponent {
         obj.key = item.id;
         obj.createTime = item.createTime;
         obj.id = item.id;
+        obj.carId = item.carId
         obj.car_num = item.num;
         obj.brand_name = item.car.brandName;
         obj.model = item.car.carModel;
@@ -134,6 +136,7 @@ class Index extends PureComponent {
         title: '品牌名称',
         dataIndex: 'brand_name',
         key: 'brand_name',
+        render: (text, record) => <a onClick={() => history.push(`/cardetail/${record.carId}`)}>{text}</a>,
       },
       {
         title: '车辆型号',

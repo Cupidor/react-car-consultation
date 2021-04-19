@@ -50,6 +50,13 @@
     access: 'isBuyer'
   },
   {
+    path: '/focus',
+    name: 'focus',
+    icon: 'Heart',
+    component: './Buyer/Attention',
+    access: 'isBuyer'
+  },
+  {
     path: '/order',
     name: 'order',
     icon: 'AccountBook',

@@ -133,6 +133,9 @@ class Index extends PureComponent {
                         description={`车辆型号：${item.model}`}
                       />
                       <Meta
+                        description={`车辆价格：${item.carPrice}`}
+                      />
+                      <Meta
                         description={`店铺名称：${item.car_store.storeName}`}
                       />
                     </Card>

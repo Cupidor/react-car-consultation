@@ -3,9 +3,9 @@ import { Space, Typography, message, Comment, Button, List, Avatar, Input, Image
 import global from '@/global.less';
 import Footer from '@/components/Footer';
 import {
-  ShoppingOutlined
+  ShoppingOutlined, HeartOutlined
 } from '@ant-design/icons';
-
+import { focusCar, focusCarStore } from '@/services/user';
 import { createShoppintList } from '@/services/shoppint_list';
 import { createViewRecord } from '@/services/view_record';
 import { getCarDetail } from '@/services/car';
@@ -48,6 +48,7 @@ class Index extends PureComponent {
       carPrice: '',
       color: '',
       store_name: '',
+      carStoreId: null,
       carNum: 1,
       submitting: false,
       commentValue: '',
@@ -90,6 +91,34 @@ class Index extends PureComponent {
     }
   }
 
+  // 关注车辆
+  onFocusCar = async () => {
+    const { carId } = this.state
+    let res = await focusCar({
+      carId: carId,
+      sUserId: localStorage.getItem('userId')
+    });
+    if (res.code === '0000') {
+      message.success('关注车辆成功')
+    } else {
+      message.error(res.message);
+    }
+  }
+
+  // 关注车辆店铺
+  onFocusCarStore = async () => {
+    const { carStoreId } = this.state
+    let res = await focusCarStore({
+      carStoreId: carStoreId,
+      sUserId: localStorage.getItem('userId')
+    });
+    if (res.code === '0000') {
+      message.success('关注店铺成功')
+    } else {
+      message.error(res.message);
+    }
+  }
+
   // 获取车辆详情
   getCarDetail = async () => {
     const { carId } = this.state
@@ -103,6 +132,7 @@ class Index extends PureComponent {
         model: json.carModel,
         carPrice: json.carPrice,
         color: json.color,
+        carStoreId: json.carStoreId,
         store_name: json.carStore.storeName,
       })
     } else {
@@ -233,11 +263,11 @@ class Index extends PureComponent {
                 </div>
                 <div style={{ width: '50%', padding: 20 }}>
                   <Space direction='vertical'>
-                    <Title>{brand_name}</Title>
+                    <Title>{brand_name}&nbsp;&nbsp;&nbsp;&nbsp;<Text style={{ color: 'red', fontSize: 16, cursor: 'pointer' }} onClick={this.onFocusCar}><HeartOutlined />关注</Text></Title>
                     <Title level={3}>车辆型号：{model}</Title>
                     <Title level={3}>车辆价格：{carPrice}</Title>
                     <Title level={3}>车辆颜色：{color}</Title>
-                    <Title level={4}>店铺名称：{store_name}</Title>
+                    <Title level={4}>店铺名称：{store_name}&nbsp;&nbsp;&nbsp;&nbsp;<Text style={{ color: 'red', fontSize: 16, cursor: 'pointer' }} onClick={this.onFocusCarStore}><HeartOutlined />关注</Text></Title>
                     <Space style={{ marginTop: 60 }}>
                       <InputNumber size="large" min={1} value={carNum} onChange={this.onCarNumChange} />
                       <Button

@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Space, Typography, message, Table, Popconfirm } from 'antd';
 import global from '@/global.less';
 import Footer from '@/components/Footer';
+import { history } from 'umi'
 import { getViewRecordQueryByCondition, deleteViewRecord } from '@/services/view_record';
 import { numberDateFormat } from '@/utils/utils';
 
@@ -41,12 +42,15 @@ class Index extends PureComponent {
       for (let item of res.result) {
         let obj = Object.create(null);
         obj.key = item.id;
+        obj.carId = item.carId
         obj.createTime = item.createTime;
-        obj.brand_name = item.car.brandName;
-        obj.model = item.car.carModel;
-        obj.carPrice = item.car.carPrice;
-        obj.color = item.car.color;
-        records.push(obj);
+        if (item.car !== null) {
+          obj.brand_name = item.car.brandName;
+          obj.model = item.car.carModel;
+          obj.carPrice = item.car.carPrice;
+          obj.color = item.car.color;
+          records.push(obj);
+        }
       }
       this.setState({
         records,
@@ -94,6 +98,7 @@ class Index extends PureComponent {
         title: '品牌名称',
         dataIndex: 'brand_name',
         key: 'brand_name',
+        render: (text, record) => <a onClick={() => history.push(`/cardetail/${record.carId}`)}>{text}</a>,
       },
       {
         title: '车辆型号',
